@@ -46,22 +46,30 @@ exports.mostrarCertificacion = async (req, res) => {
 //ACTUALIZAR
 exports.putCertificacion = async (req, res) => {
   const idcertificacion = req.params.idcertificacion;
-  console.log(req.body);
+  const {
+    certificacion,
+    universidad,
+    fecha,
+    pais,
+    estado,
+    obs,
+    certificado,
+  } = req.body;
   try {
-    Certificacion.findById(idcertificacion, function (err, certificacion) {
+    Certificacion.findById(idcertificacion, function (err, certifi) {
       if (req.file) {
-        if (certificacion.certificadoURL === undefined) {
+        if (certifi.certificadoURL === undefined) {
           //subida de imagen
           if (req.file) {
             const { filename } = req.file;
-            certificacion.setcertificado(filename);
+            certifi.setcertificado(filename);
           }
         } else {
-          var str = certificacion.certificadoURL;
-          var tr = certificacion.certificadoURL.length;
+          var str = certifi.certificadoURL;
+          var tr = certifi.certificadoURL.length;
           var ur = str.substr(28, tr.length);
           var stor =
-          "C:/Users/Abraham/Desktop/SapReact/Server/storage/estudios";
+            "C:/Users/Abraham/Desktop/SapReact/Server/storage/estudios";
           fs.unlink(stor.concat(ur))
             .then(() => {
               console.log("File removed");
@@ -72,23 +80,22 @@ exports.putCertificacion = async (req, res) => {
         }
         if (req.file) {
           const { filename } = req.file;
-          certificacion.setcertificado(filename);
+          certifi.setcertificado(filename);
         }
       }
-
-      certificacion.certificacion = req.body.certificacion;
-      certificacion.universidad = req.body.universidad;
-      certificacion.fecha = req.body.fecha;
-      certificacion.pais = req.body.pais;
-      certificacion.estado = req.body.estado;
-      certificacion.obs = req.body.obs;
-      certificacion.certificado = req.body.certificado;
+      if (certificacion) certificacion.certificacion = certificacion;
+      if (universidad) certificacion.universidad = universidad;
+      if (fecha) certificacion.fecha = fecha;
+      if (pais) certificacion.pais = pais;
+      if (estado) certificacion.estado = estado;
+      if (obs) certificacion.obs = obs;
+      if (certificado) certificacion.certificado = certificado;
 
       if (err)
         return res.status(404).json({ msg: "Certificado no encontrado" });
-      certificacion.save(function (err) {
+        certifi.save(function (err) {
         if (err) return res.status(500).json({ msg: "Error al actualizar." });
-        res.status(200).send(certificacion);
+        res.status(200).send(certifi);
       });
     });
   } catch (error) {
